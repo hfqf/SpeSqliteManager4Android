@@ -6,12 +6,12 @@
       "tableName":"teacher",
       "columns":[
         {
-          "name": "id",
-          "action": "INTEGER PRIMARY KEY AUTOINCREMENT"
+          "key": "id",
+          "keyType": "INTEGER PRIMARY KEY AUTOINCREMENT"
         },
         {
-          "name": "name",
-          "action": "TEXT"
+          "key": "name",
+          "keyType": "TEXT"
         }
       ]
     }

@@ -1,7 +1,20 @@
+<!--
+ * @Author: user.email
+ * @Date: 2023-02-14 22:20:49
+ * @LastEditors: user.email
+ * @LastEditTime: 2023-02-14 23:58:47
+ * @FilePath: /qxxzs_h5s/Users/points/Documents/git/SpeSqliteManager4Android/README.md
+ * @Description: 
+ * 
+ * Copyright (c) 2023 by ${git_email}, All Rights Reserved. 
+-->
 # SpeSqliteManager4Android
 
 #### 介绍
 一个轻量级管理android数据自动升级的管理类
+#### 核心设计思想
+1.以静制动:配置项代替代码，保证代码稳定性
+
 
 SpeSqliteUpdateManager类和SpeSqlSetting.xml一起用来控制本地数据的创建和升级功能。升级功能基于应用每次升级后，本地目录中的数据不变做的。
 
