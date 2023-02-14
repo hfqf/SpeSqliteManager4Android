@@ -2,7 +2,7 @@
  * @Author: user.email
  * @Date: 2023-02-14 22:20:49
  * @LastEditors: user.email
- * @LastEditTime: 2023-02-15 00:03:45
+ * @LastEditTime: 2023-02-15 00:04:46
  * @FilePath: /undefined/Users/points/Documents/git/SpeSqliteManager4Android/README.md
  * @Description: 
  * 
@@ -17,7 +17,7 @@
 1.以静制动:配置项代替代码，保证代码稳定性
 
 #### 设计思路
-SpeSqliteUpdateManager类和SpeSqlSetting.josn一起用来控制本地数据的创建和升级功能。升级功能基于应用每次升级后，本地目录中的数据不变做的。
+SpeSqliteUpdateManager类和SpeSqlSetting.josn一起用来控制本地数据的创建和升级功能。
 
 #### 关配置项json:
 * 1.dbName:是保存到沙盒的数据库文件的名称。
