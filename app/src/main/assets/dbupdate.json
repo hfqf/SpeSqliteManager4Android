@@ -1,0 +1,19 @@
+{
+  "dbName": "HFDemo",
+  "dbVersion": 1 ,
+  "dbTables": [
+    {
+      "tableName":"teacher",
+      "columns":[
+        {
+          "name": "id",
+          "action": "INTEGER PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "name": "name",
+          "action": "TEXT"
+        }
+      ]
+    }
+  ]
+}
