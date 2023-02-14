@@ -2,7 +2,7 @@
  * @Author: user.email
  * @Date: 2023-02-14 22:20:49
  * @LastEditors: user.email
- * @LastEditTime: 2023-02-15 00:04:46
+ * @LastEditTime: 2023-02-15 00:05:30
  * @FilePath: /undefined/Users/points/Documents/git/SpeSqliteManager4Android/README.md
  * @Description: 
  * 
@@ -28,6 +28,6 @@ SpeSqliteUpdateManager类和SpeSqlSetting.josn一起用来控制本地数据的�
 #### 关配置项json:
 * 1.目前写的逻辑只是用来只创建了一个db文件。如果配置创建多个db文件，请注意。
 * 2.修改表时,之前不用的表和字段作为冗余表和字段,不要删。
-#### 继承方式
+#### 集成方式
 1.直接调用如下代码即可,可自动创建和升级数据库
 ```SqliteDataManager.sharedInstance().init()```
