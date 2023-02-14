@@ -1,37 +1,24 @@
 # SpeSqliteManager4Android
 
 #### 介绍
-一个用来管理iOS数据自动升级的管理类
+一个轻量级管理android数据自动升级的管理类
 
-#### 软件架构
-软件架构说明
+SpeSqliteUpdateManager类和SpeSqlSetting.xml一起用来控制本地数据的创建和升级功能。升级功能基于应用每次升级后，本地目录中的数据不变做的。
 
+使用说明
+1.目前写的逻辑只是用来只创建了一个db文件。如果配置创建多个db文件，请注意。
 
-#### 安装教程
+2.关于xml:
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.dbName:是保存到沙盒的数据库文件的名称。
+2.dbVersion:数据库版本号,判断本地数据库文件是否升级就通过此key。
+3.dbTables:想要创建的表名,每个表名下是具体的字段。
+4.上面3个字段名最好不要改，如果修改了话，连同程序里的宏也请同时修改下。
+3.对于已经已使用plist的应用，注意plist中的值不要乱改动。
 
-#### 使用说明
+4.修改表时:
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.不用的表和字段作为冗余表和字段,不删。
+使用方法:
 
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+1.直接调用SqliteDataManager.sharedInstance()即可,可自动创建和升级数据库。
