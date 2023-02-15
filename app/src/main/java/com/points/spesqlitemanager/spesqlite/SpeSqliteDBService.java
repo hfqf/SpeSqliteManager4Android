@@ -5,6 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
+import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
+import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,32 +20,26 @@ import java.util.List;
  */
 public class SpeSqliteDBService extends SQLiteOpenHelper {
 
-    private static final String dbName  = "autore.db";
-    private static final String TAG     = "DBService";
-    private static final int  dbVersion = 10;//3.3
-
+    private static final String TAG     = "SpeSqliteDBService";
     private static SpeSqliteDBService instance  = null;
+    private Context context = null;
+    private SQLiteDatabase db = null;
 
-    /**
-     * 单例获取该DBService
-     *
-     * @param context
-     * @return
-     */
     public static synchronized SpeSqliteDBService getInstance(Context context) {
         if (instance == null){
             synchronized (SpeSqliteDBService.class){
                 if (instance == null){
                     instance = new SpeSqliteDBService(context);
+                    instance.context = context;
+                    instance.db = instance.getWritableDatabase();
                 }
             }
         }
         return instance;
     }
 
-    public SpeSqliteDBService(Context context)
-    {
-        super(context,dbName,null,dbVersion);
+    public SpeSqliteDBService(Context context) {
+        super(context,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbName,null,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbVersion);
     }
 
     /**
@@ -52,17 +50,23 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /**
-         * 由于该方法只是再最开始的安装时会执行,根据dbversion直接创建,再配合onUpdate函数，可确保所有情形的数据库升级流程
-         */
-            List<String> arrTable  = new ArrayList<String>(Arrays.asList("create table if not exists  contact (carcode TEXT,name TEXT,tel TEXT,cartype TEXT,owner TEXT,idfromnode TEXT," +
-                    " inserttime TEXT,isbindweixin TEXT,weixinopenid TEXT,vin TEXT,carregistertime TEXT,headurl TEXT," +
-                    "safecompany TEXT,safenexttime TEXT,yearchecknexttime TEXT,tqTime1 TEXT,tqTime2 TEXT,key TEXT,isVip TEXT,carId TEXT,safecompany3 TEXT,safenexttime3 TEXT,tqTime3 TEXT,safetiptime3 TEXT)"
-            ));
-            for (int i=0;i<arrTable.size();i++) {
-                String sql = arrTable.get(i);
-                db.execSQL(sql);
+        SpeSqliteSettingModel currentDBModel = SpeSqliteUpdateManager.getInstance().currentAppDBSetting();
+        for(int i=0;i<currentDBModel.dbTables.size();i++){
+            SpeSqliteTableSettingModel table = currentDBModel.dbTables.get(i);
+            String sql = " create table if not exists "+table.tableName+" (";
+            for(int j=0;j<table.columns.size();j++){
+                SpeSqliteColumnSettingModel column = table.columns.get(j);
+                sql+=column.key+" ";
+                sql+=column.keyType;
+                if(j==table.columns.size()-1){
+                    sql+=" ";
+                }else {
+                    sql+=",";
+                }
             }
+            sql+=")";
+            db.execSQL(sql);
+        }
     }
 
 
@@ -76,7 +80,6 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) {
-        // 升级数据库
          updateSQL(db,oldVersion,newVersion);
     }
 

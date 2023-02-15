@@ -15,7 +15,7 @@ public class SpeSqliteSettingModel {
     /**
      * 数据库版本号
      */
-    public String dbVersion;
+    public int dbVersion;
 
     /**
      * 所有表数组

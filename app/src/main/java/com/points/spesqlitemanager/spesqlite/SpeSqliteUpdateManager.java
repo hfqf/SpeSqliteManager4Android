@@ -28,6 +28,12 @@ public class SpeSqliteUpdateManager {
      */
     private SpeSqliteSettingModel currentAppDBSetting = null;
 
+    private final  Gson gson = new Gson();
+
+    private String currentDBJson = null;
+
+    private static final String kDBJsonName  = "dbupdate.json";
+
     private SpeSqliteUpdateManager() {
 
     }
@@ -44,17 +50,22 @@ public class SpeSqliteUpdateManager {
         return true;
     }
 
+    public String getCurrentDBJson() {
+        currentDBJson = JsonUtil.getJson(kDBJsonName,this.appContext);
+        return currentDBJson;
+    }
 
-    public SpeSqliteSettingModel getAppAssetsDBSetting(Context context){
-        String json = JsonUtil.getJson("dbupdate.json",context);
-        Gson gson = new Gson();
-        SpeSqliteSettingModel model = gson.fromJson(json, SpeSqliteSettingModel.class);
+    public SpeSqliteSettingModel currentAppDBSetting(){
+        SpeSqliteSettingModel model = gson.fromJson(this.getCurrentDBJson(), SpeSqliteSettingModel.class);
         return model;
     }
 
-    public void init(Context context){
+    public SpeSqliteUpdateManager init(Context context){
         this.appContext =context;
+        return this;
     }
+
+
     private SpeSqliteColumnSettingModel getAppLoclDBSetting(){
         return null;
     }
