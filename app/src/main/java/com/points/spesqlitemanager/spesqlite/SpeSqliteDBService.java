@@ -50,51 +50,19 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        SpeSqliteSettingModel currentDBModel = SpeSqliteUpdateManager.getInstance().currentAppDBSetting();
-        for(int i=0;i<currentDBModel.dbTables.size();i++){
-            SpeSqliteTableSettingModel table = currentDBModel.dbTables.get(i);
-            String sql = " create table if not exists "+table.tableName+" (";
-            for(int j=0;j<table.columns.size();j++){
-                SpeSqliteColumnSettingModel column = table.columns.get(j);
-                sql+=column.key+" ";
-                sql+=column.keyType;
-                if(j==table.columns.size()-1){
-                    sql+=" ";
-                }else {
-                    sql+=",";
-                }
-            }
-            sql+=")";
-            db.execSQL(sql);
-        }
+        SpeSqliteUpdateManager.getInstance().create(db);
     }
 
-
-    /**
-     * Called when the database needs to be upgraded. The implementation
-     * should use this method to drop tables, add tables, or do anything else it
-     * needs to upgrade to the new schema version.
-     * @param db The database.
-     * @param oldVersion The old database version.
-     * @param newVersion The new database version.
-     */
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) {
-         updateSQL(db,oldVersion,newVersion);
+         SpeSqliteUpdateManager.getInstance().upgrade(db);
     }
 
     @Override
     public void onOpen(SQLiteDatabase db) {
-
-        Log.e(TAG,"onOpen");
+        SpeSqliteUpdateManager.getInstance().open(db);
     }
 
-    /**
-     * 升级数据库表和字段
-     * @param db
-     * @param oldVersion
-     * @param newVersion
-     */
     private  void  updateSQL(SQLiteDatabase db,int oldVersion,int newVersion) {
 
 //        //2.2
