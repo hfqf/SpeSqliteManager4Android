@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.points.spesqlitemanager.R;
+import com.points.spesqlitemanager.spesqlite.SpeSqliteDBService;
 import com.points.spesqlitemanager.spesqlite.SpeSqliteUpdateManager;
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        SpeSqliteUpdateManager.getInstance().init(this);
+        SpeSqliteDBService.getInstance(this);
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 

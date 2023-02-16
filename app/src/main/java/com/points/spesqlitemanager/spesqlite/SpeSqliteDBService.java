@@ -78,51 +78,6 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
 //                Log.e(TAG,"updateSQL:"+sql);
 //                db.execSQL(sql);
 //            }
-//        }else if(dbVersion == 3)//当是从3.2直接开始的新用户
-//        {
-//
-//            List<String> arrAlertTable = new ArrayList<String>(Arrays.asList(
-//                    "alter table contact add column inserttime TEXT",
-//                    "alter table contact add column isbindweixin TEXT",
-//                    "alter table contact add column weixinopenid TEXT",
-//                    "alter table contact add column vin TEXT",
-//                    "alter table contact add column carregistertime TEXT",
-//                    "alter table contact add column headurl TEXT"));
-//            for (int i = 0; i < arrAlertTable.size(); i++) {
-//                String sql = arrAlertTable.get(i);
-//                Log.e(TAG,"updateSQL:"+sql);
-//                db.execSQL(sql);
-//            }
-//
-//        }else if(dbVersion == 4)//当是从3.4直接开始的新用户
-//        {
-//            List<String> arrAlertTable = new ArrayList<String>(Arrays.asList(
-//                    "alter table contact add column safecompany TEXT",
-//                    "alter table contact add column safenexttime TEXT",
-//                    "alter table contact add column yearchecknexttime TEXT",
-//                    "alter table contact add column tqTime1 TEXT",
-//                    "alter table contact add column tqTime2 TEXT"));
-//            for (int i = 0; i < arrAlertTable.size(); i++) {
-//                String sql = arrAlertTable.get(i);
-//                Log.e(TAG,"updateSQL:"+sql);
-//                db.execSQL(sql);
-//            }
-//        }
-
-        String delsql = "DROP table contact";
-        db.execSQL(delsql);
-
-
-        List<String> arrTable  = new ArrayList<String>(Arrays.asList("create table if not exists  contact (carcode TEXT,name TEXT,tel TEXT,cartype TEXT,owner TEXT,idfromnode TEXT," +
-                " inserttime TEXT,isbindweixin TEXT,weixinopenid TEXT,vin TEXT,carregistertime TEXT,headurl TEXT," +
-                "safecompany TEXT,safenexttime TEXT,yearchecknexttime TEXT,tqTime1 TEXT,tqTime2 TEXT,key TEXT,isVip TEXT,carId TEXT,safecompany3 TEXT,safenexttime3 TEXT,tqTime3 TEXT,safetiptime3 TEXT)"
-        ));
-
-        for (int i=0;i<arrTable.size();i++)
-        {
-            String sql = arrTable.get(i);
-            db.execSQL(sql);
-        }
 
     }
 
@@ -136,102 +91,12 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
         return db;
     }
 
-//    public static void addNewContact(Contact contact,SQLiteDatabase db){
-//
-//
-//        ContentValues cv = new ContentValues();
-//        cv.put("carcode", contact.getCarCode().length() == 0? "" :contact.getCarCode() );
-//
-//        cv.put("name",contact.getName().length() == 0? "" :contact.getName() );
-//
-//        cv.put("cartype", contact.getCarType().length() == 0? "" :contact.getCarType() );
-//
-//        cv.put("owner",contact.getOwner().length() == 0? "" :contact.getOwner() );
-//
-//        cv.put("idfromnode", contact.getIdfromnode().length() == 0? "" :contact.getIdfromnode() );
-//
-//        cv.put("isbindweixin", contact.getIsbindweixin().length() == 0? "0" :contact.getIsbindweixin() );
-//
-//        cv.put("weixinopenid",contact.getWeixinopenid().length() == 0? "" :contact.getWeixinopenid() );
-//
-//        cv.put("vin",contact.getVin().length() == 0? "" :contact.getVin());
-//
-//        cv.put("carregistertime", contact.getCarregistertime().length() == 0? "" :contact.getCarregistertime());
-//
-//        cv.put("headurl", contact.getHeadurl().length() == 0? "" :contact.getHeadurl());
-//
-//        cv.put("inserttime", contact.getInserttime().length() == 0? "" :contact.getInserttime());
-//
-//        cv.put("tel", contact.getTel().length() == 0? "" :contact.getTel());
-//
-//
-//        cv.put("safecompany", contact.getSafecompany().length() == 0? "" :contact.getSafecompany());
-//        cv.put("safenexttime", contact.getSafenexttime().length() == 0? "" :contact.getSafenexttime());
-//        cv.put("yearchecknexttime", contact.getYearchecknexttime().length() == 0? "" :contact.getYearchecknexttime());
-//        cv.put("tqTime1", contact.getTqTime1().length() == 0? "" :contact.getTqTime1());
-//        cv.put("tqTime2", contact.getTqTime2().length() == 0? "" :contact.getTqTime2());
-//        cv.put("key", contact.getCar_key() == null? "" :contact.getCar_key());
-//        cv.put("isVip", contact.getisVip() == null? "" :contact.getisVip());
-//        cv.put("carId", contact.getCar_id() == null? "" :contact.getCar_id());
-//
-//        cv.put("safecompany3", contact.getSafecompany3() == null? "" :contact.getSafecompany3());
-//        cv.put("safenexttime3", contact.getSafenexttime3() == null? "" :contact.getSafenexttime3());
-//        cv.put("tqTime3", contact.getTqTime3() == null? "" :contact.getTqTime3());
-//        cv.put("safetiptime3", contact.getSafetiptime3() == null? "" :contact.getSafetiptime3());
-//
-//        db.insert("contact",null,cv);
-//
-//    }
-//    public  static  boolean deleteContact(Contact contact){
-//        Log.e(TAG,"deleteContact:"+LoggerUtil.jsonFromObject(contact));
-//        SQLiteDatabase db = instance.getWritableDatabase();
-//        db.delete("contact", "tel=?", new String[]{contact.getTel()});
-//        db.close();
-//        return true;
-//    }
+
 //    public  static  void updateContact(Contact contact){
 //        Log.e(TAG,"updateContact:"+LoggerUtil.jsonFromObject(contact));
 //        SQLiteDatabase db = instance.getWritableDatabase();
 //        ContentValues cv = new ContentValues();
-//
 //        cv.put("carcode", contact.getCarCode().length() == 0? "" :contact.getCarCode() );
-//
-//        cv.put("name",contact.getName().length() == 0? "" :contact.getName() );
-//
-//        cv.put("cartype", contact.getCarType().length() == 0? "" :contact.getCarType() );
-//
-//        cv.put("owner",contact.getOwner().length() == 0? "" :contact.getOwner() );
-//
-//        cv.put("idfromnode", contact.getIdfromnode().length() == 0? "" :contact.getIdfromnode() );
-//
-//        cv.put("isbindweixin", contact.getIsbindweixin().length() == 0? "0" :contact.getIsbindweixin() );
-//
-//        cv.put("weixinopenid",contact.getWeixinopenid().length() == 0? "" :contact.getWeixinopenid() );
-//
-//        cv.put("vin",contact.getVin().length() == 0? "" :contact.getVin());
-//
-//        cv.put("carregistertime", contact.getCarregistertime().length() == 0? "" :contact.getCarregistertime());
-//
-//        cv.put("headurl", contact.getHeadurl().length() == 0? "" :contact.getHeadurl());
-//
-//        cv.put("tel", contact.getTel().length() == 0? "" :contact.getTel());
-//
-//
-//        cv.put("safecompany", contact.getSafecompany().length() == 0? "" :contact.getSafecompany());
-//        cv.put("safenexttime", contact.getSafenexttime().length() == 0? "" :contact.getSafenexttime());
-//        cv.put("yearchecknexttime", contact.getYearchecknexttime().length() == 0? "" :contact.getYearchecknexttime());
-//        cv.put("tqTime1", contact.getTqTime1().length() == 0? "" :contact.getTqTime1());
-//        cv.put("tqTime2", contact.getTqTime2().length() == 0? "" :contact.getTqTime2());
-//        cv.put("key", contact.getCar_key() == null? "" :contact.getCar_key());
-//        cv.put("isVip", contact.getisVip() == null? "" :contact.getisVip());
-//        cv.put("carId", contact.getCar_id() == null? "" :contact.getCar_id());
-//
-//        cv.put("safecompany3", contact.getSafecompany3() == null? "" :contact.getSafecompany3());
-//        cv.put("safenexttime3", contact.getSafenexttime3() == null? "" :contact.getSafenexttime3());
-//        cv.put("tqTime3", contact.getTqTime3() == null? "" :contact.getTqTime3());
-//        cv.put("safetiptime3", contact.getSafetiptime3() == null? "" :contact.getSafetiptime3());
-//
-//
 //        db.update("contact", cv, "idfromnode=?", new String[]{contact.getIdfromnode()});
 //        db.close();
 //    }

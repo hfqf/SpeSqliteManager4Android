@@ -1,5 +1,6 @@
 package com.points.spesqlitemanager.spesqlite;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -95,6 +96,8 @@ public class SpeSqliteUpdateManager {
             sql+=")";
             db.execSQL(sql);
         }
+        //记录此次数据库配置信息
+        updateConfig2DB(db,currentDBModel);
     }
 
     /**
@@ -106,6 +109,23 @@ public class SpeSqliteUpdateManager {
     public void upgrade(SQLiteDatabase db){
 
     }
+
+    /**
+     * 当数据库升级完毕后，需要将此次数据库配置更新数据库中的dbconfig表,以便给下次升级数据库时的比较
+     * @param db
+     * @param currentDBConfig
+     */
+    public void updateConfig2DB(SQLiteDatabase db,SpeSqliteSettingModel currentDBConfig){
+        //先删除之前的记录
+        db.delete("dbconfig", "", new String[]{});
+        //再直接插入新配置
+        ContentValues cv = new ContentValues();
+        cv.put("dbversion", currentDBConfig.dbVersion );
+        cv.put("dbname", currentDBConfig.dbName );
+        cv.put("dbtables", gson.toJson(currentDBConfig.dbTables) );
+        db.insert("dbconfig",null,cv);
+    }
+
     public void open(SQLiteDatabase db){
 
     }

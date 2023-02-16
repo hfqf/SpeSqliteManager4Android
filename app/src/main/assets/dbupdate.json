@@ -3,6 +3,23 @@
   "dbVersion": 1 ,
   "dbTables": [
     {
+      "tableName":"dbconfig",
+      "columns":[
+        {
+          "key": "dbversion",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "dbname",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "dbtables",
+          "keyType": "TEXT"
+        }
+      ]
+    },
+    {
       "tableName":"teacher",
       "columns":[
         {
