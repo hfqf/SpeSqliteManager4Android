@@ -42,12 +42,6 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
         super(context,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbName,null,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbVersion);
     }
 
-    /**
-     * Called when the database is created for the first time. This is where the
-     * creation of tables and the initial population of the tables should happen.
-     *
-     * @param db The database.
-     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         SpeSqliteUpdateManager.getInstance().create(db);
@@ -55,42 +49,13 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) {
-         SpeSqliteUpdateManager.getInstance().upgrade(db);
+         SpeSqliteUpdateManager.getInstance().upgrade(this,db);
     }
 
     @Override
     public void onOpen(SQLiteDatabase db) {
-        SpeSqliteUpdateManager.getInstance().open(db);
-    }
-
-    private  void  updateSQL(SQLiteDatabase db,int oldVersion,int newVersion) {
-
-//        //2.2
-//        if(newVersion == 2) {
-//            List<String> arrTable = new ArrayList<String>(Arrays.asList(
-//                    "alter table contact add column owner TEXT",
-//                    "alter table contact add column idfromnode TEXT",
-//                    "alter table repairHistory add column owner TEXT",
-//                    "alter table repairHistory add column idfromnode TEXT",
-//                    "alter table repairHistory add column inserttime TEXT"));
-//            for (int i = 0; i < arrTable.size(); i++) {
-//                String sql = arrTable.get(i);
-//                Log.e(TAG,"updateSQL:"+sql);
-//                db.execSQL(sql);
-//            }
 
     }
-
-    public static void closeDB(SQLiteDatabase db) {
-        if(db != null)
-        db.close();
-    }
-
-    public static SQLiteDatabase getDB() {
-        SQLiteDatabase db = instance.getWritableDatabase();
-        return db;
-    }
-
 
 //    public  static  void updateContact(Contact contact){
 //        Log.e(TAG,"updateContact:"+LoggerUtil.jsonFromObject(contact));

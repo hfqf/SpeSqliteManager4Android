@@ -3,20 +3,26 @@ package com.points.spesqlitemanager.spesqlite;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
 import com.points.spesqlitemanager.spesqlite.utils.JsonUtil;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 /**
  * @author hfqf123@126.com
- * @brief 用于支持对存储在SD卡上的数据库的访问
+ * @brief 该管理类负责针对本地db的创建、新建表、表字段升级、删除表,通过配置的方式去升级数据库，减少代码的改动，核心思想：以静制动。
  * @date 2023-02-14
  */
 public class SpeSqliteUpdateManager {
@@ -53,37 +59,10 @@ public class SpeSqliteUpdateManager {
         private static final SpeSqliteUpdateManager instance = new SpeSqliteUpdateManager();
     }
 
-    private boolean checkUpdate(){
-        return true;
-    }
-
-    /**
-     * 从assets中获取数据库配置信息，如果没有需要初始化一个
-     * @return
-     */
-    public String getCurrentDBJson() {
-        currentDBJson = JsonUtil.getJson(kDBJsonName,this.appContext);
-        return currentDBJson;
-    }
-
-    public SpeSqliteSettingModel currentAppDBSetting(){
-        SpeSqliteSettingModel model = gson.fromJson(this.getCurrentDBJson(), SpeSqliteSettingModel.class);
-        if(model.dbName.equals("temp")){
-            Log.e("SpeSqliteUpdateManager","需要在assets中新建json文件");
-        }
-        return model;
-    }
-
     public SpeSqliteUpdateManager init(Context context){
         this.appContext =context;
         return this;
     }
-
-
-    private SpeSqliteColumnSettingModel getAppLoclDBSetting(){
-        return null;
-    }
-
 
     /**
      * 数据库第一次创建时的调用函数
@@ -117,8 +96,66 @@ public class SpeSqliteUpdateManager {
      * 2.老表新增字段需要遍历db中的json表字段明细和当前app中的json明细
      * @param db
      */
-    public void upgrade(SQLiteDatabase db){
+    public void upgrade(SpeSqliteDBService dbHelper,SQLiteDatabase db){
+        SpeSqliteSettingModel newConfig = this.currentAppDBSetting();
+        SpeSqliteSettingModel localConfig = this.getAppLoclDBSetting(db);
+        if(localConfig.dbVersion< newConfig.dbVersion){
+            for(int j=0;j<newConfig.dbTables.size();j++){
+                SpeSqliteTableSettingModel _new = newConfig.dbTables.get(j);
+                for(int i=0;i<localConfig.dbTables.size();i++){
+                    SpeSqliteTableSettingModel _local = localConfig.dbTables.get(i);
+                    if(_local.tableName.equals(_new.tableName)){//找到，再判断字段是否有新增
+                        if(_local.columns.size()<_new.columns.size()){
+                            //执行alert去新增字段 //
+                            alterCoulmns(db,_local,_new);
+                        }
+                        break;//只要匹配到就直接跳出该层循环
+                    }
+                }
+                //本地数据没找到这个表需要新增
+                createTableSQL(db,_new);
+            }
 
+        }
+        updateConfig2DB(db,newConfig);
+
+    }
+
+    private void alterCoulmns(SQLiteDatabase db,SpeSqliteTableSettingModel _old,SpeSqliteTableSettingModel _new){
+        //alter table contact add column safecompany TEXT"
+        for(int i=0;i<_new.columns.size();i++){
+            if(i>=_old.columns.size()){
+                SpeSqliteColumnSettingModel column = _new.columns.get(i);
+                String sql = " alter table "+_old.tableName+" add column ";
+                sql+=column.key;
+                sql+=" ";
+                sql+= column.keyType;
+                db.execSQL(sql);
+            }
+        }
+    }
+    private void createTableSQL(SQLiteDatabase db,SpeSqliteTableSettingModel table){
+        String sql = " create table if not exists "+table.tableName+" (";
+        for(int j=0;j<table.columns.size();j++){
+            SpeSqliteColumnSettingModel column = table.columns.get(j);
+            sql+=column.key+" ";
+            sql+=column.keyType;
+            if(j==table.columns.size()-1){
+                sql+=")";
+            }else {
+                sql+=",";
+            }
+        }
+        db.execSQL(sql);
+    }
+
+    /**
+     * 从assets中获取数据库配置信息，如果没有需要初始化一个
+     * @return
+     */
+    public String getCurrentDBJson() {
+        currentDBJson = JsonUtil.getJson(kDBJsonName,this.appContext);
+        return currentDBJson;
     }
 
     /**
@@ -137,7 +174,32 @@ public class SpeSqliteUpdateManager {
         db.insert("dbconfig",null,cv);
     }
 
-    public void open(SQLiteDatabase db){
+    public SpeSqliteSettingModel getAppLoclDBSetting(SQLiteDatabase db){
+        Cursor c = db.rawQuery("SELECT * FROM dbconfig",new String[]{});
+        SpeSqliteSettingModel model = new SpeSqliteSettingModel();
+        while (c.moveToNext()) {
+            String dbName = c.getString(c.getColumnIndex("dbname"));
+            String dbVersion = c.getString(c.getColumnIndex("dbversion"));
+            String dbTables = c.getString(c.getColumnIndex("dbtables"));
+            model.dbName = dbName;
+            model.dbVersion =  Integer.parseInt(dbVersion);
 
+            JsonArray array = JsonParser.parseString(dbTables).getAsJsonArray();
+            ArrayList<SpeSqliteTableSettingModel> tables = new ArrayList<>();
+            for(int i=0;i<array.size();i++){
+                SpeSqliteTableSettingModel table = gson.fromJson(array.get(i),SpeSqliteTableSettingModel.class);
+                tables.add(table);
+            }
+            model.dbTables = tables;
+        }
+        return model;
+    }
+
+    public SpeSqliteSettingModel currentAppDBSetting(){
+        SpeSqliteSettingModel model = gson.fromJson(this.getCurrentDBJson(), SpeSqliteSettingModel.class);
+        if(model.dbName.equals("temp")){
+            Log.e("SpeSqliteUpdateManager","需要在assets中新建json文件");
+        }
+        return model;
     }
 }

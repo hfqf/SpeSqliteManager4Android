@@ -16,4 +16,5 @@ public class SpeSqliteTableSettingModel {
      * 当前表字段设计
      */
     public ArrayList<SpeSqliteColumnSettingModel> columns;
+
 }
