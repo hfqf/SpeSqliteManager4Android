@@ -1,5 +1,5 @@
 {
-  "dbName": "HFDemo",
+  "dbName": "localdb",
   "dbVersion": 1 ,
   "dbTables": [
     {

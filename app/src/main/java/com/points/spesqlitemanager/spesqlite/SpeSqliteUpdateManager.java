@@ -1,14 +1,18 @@
 package com.points.spesqlitemanager.spesqlite;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
 import com.points.spesqlitemanager.spesqlite.utils.JsonUtil;
+
+import java.io.FileNotFoundException;
 
 /**
  * @author hfqf123@126.com
@@ -53,6 +57,10 @@ public class SpeSqliteUpdateManager {
         return true;
     }
 
+    /**
+     * 从assets中获取数据库配置信息，如果没有需要初始化一个
+     * @return
+     */
     public String getCurrentDBJson() {
         currentDBJson = JsonUtil.getJson(kDBJsonName,this.appContext);
         return currentDBJson;
@@ -60,6 +68,9 @@ public class SpeSqliteUpdateManager {
 
     public SpeSqliteSettingModel currentAppDBSetting(){
         SpeSqliteSettingModel model = gson.fromJson(this.getCurrentDBJson(), SpeSqliteSettingModel.class);
+        if(model.dbName.equals("temp")){
+            Log.e("SpeSqliteUpdateManager","需要在assets中新建json文件");
+        }
         return model;
     }
 
