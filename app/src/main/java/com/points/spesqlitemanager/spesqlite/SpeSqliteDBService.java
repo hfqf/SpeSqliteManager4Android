@@ -3,15 +3,6 @@ package com.points.spesqlitemanager.spesqlite;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
-import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
-import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author hfqf123@126.com
@@ -19,12 +10,10 @@ import java.util.List;
  * @date 2023-02-14
  */
 public class SpeSqliteDBService extends SQLiteOpenHelper {
-
     private static final String TAG     = "SpeSqliteDBService";
     private static SpeSqliteDBService instance  = null;
     private Context context = null;
     private SQLiteDatabase db = null;
-
     public static synchronized SpeSqliteDBService getInstance(Context context) {
         if (instance == null){
             synchronized (SpeSqliteDBService.class){
@@ -39,7 +28,8 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
     }
 
     public SpeSqliteDBService(Context context) {
-        super(context,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbName,null,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbVersion);
+        super(context,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbName,
+                null,SpeSqliteUpdateManager.getInstance().init(context).currentAppDBSetting().dbVersion);
     }
 
     @Override
@@ -49,40 +39,7 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) {
-         SpeSqliteUpdateManager.getInstance().upgrade(this,db);
+         SpeSqliteUpdateManager.getInstance().upgrade(db);
     }
-
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-
-    }
-
-//    public  static  void updateContact(Contact contact){
-//        Log.e(TAG,"updateContact:"+LoggerUtil.jsonFromObject(contact));
-//        SQLiteDatabase db = instance.getWritableDatabase();
-//        ContentValues cv = new ContentValues();
-//        cv.put("carcode", contact.getCarCode().length() == 0? "" :contact.getCarCode() );
-//        db.update("contact", cv, "idfromnode=?", new String[]{contact.getIdfromnode()});
-//        db.close();
-//    }
-//    public  static ArrayList queryAllContact(){
-//        Log.e(TAG,"queryAllContact");
-//        SQLiteDatabase db = instance.getWritableDatabase();
-//        Cursor c = db.rawQuery("SELECT * FROM contact", null);
-//        ArrayList<Contact> arr = new ArrayList<>();
-//        while (c.moveToNext()) {
-//            Contact con = DBService.getContact(c);
-//            arr.add(con);
-//        }
-//
-//        Gson gson2 = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
-//        String obj2 = gson2.toJson(arr);
-//        Log.e(TAG,"queryAllContact 获取完毕:"+obj2);
-//        c.close();
-//        db.close();
-//        return arr.size() > 0 ? arr : new  ArrayList();
-//    }
-
-
 }
 
