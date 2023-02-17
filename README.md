@@ -25,6 +25,53 @@ SpeSqliteUpdateManager类和dbupdate.josn一起用来控制本地数据的创建
 * 3.dbTables:想要创建的表名,每个表名下是具体的字段。
 
 #### 核心代码
+0. 数据库配置文件dbupdate.json
+```
+{
+  "dbName": "localdb",
+  "dbVersion": 5 ,
+  "dbTables": [
+    {
+      "tableName":"dbconfig",
+      "columns":[
+        {
+          "key": "dbversion",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "dbname",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "dbtables",
+          "keyType": "TEXT"
+        }
+      ]
+    },
+    {
+      "tableName":"teacher",
+      "columns":[
+        {
+          "key": "id",
+          "keyType": "INTEGER PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "key": "name",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "age",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "sex",
+          "keyType": "TEXT"
+        }
+      ]
+    }
+  ]
+}
+```
 
 1.开始调用
 ```
