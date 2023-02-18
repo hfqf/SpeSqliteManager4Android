@@ -1,6 +1,10 @@
 {
   "dbName": "localdb",
+<<<<<<< HEAD
   "dbVersion":9 ,
+=======
+  "dbVersion": 5 ,
+>>>>>>> d8d557538928bf1709abf9f9fe10a287efe685b6
   "dbTables": [
     {
       "tableName":"dbconfig",
@@ -37,6 +41,7 @@
         {
           "key": "sex",
           "keyType": "TEXT"
+<<<<<<< HEAD
         },
         {
           "key": "tall",
@@ -67,6 +72,8 @@
         {
           "key": "tall",
           "keyType": "TEXT"
+=======
+>>>>>>> d8d557538928bf1709abf9f9fe10a287efe685b6
         }
 
       ]

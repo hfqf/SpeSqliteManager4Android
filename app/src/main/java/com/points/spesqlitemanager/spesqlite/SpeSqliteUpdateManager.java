@@ -1,6 +1,5 @@
 package com.points.spesqlitemanager.spesqlite;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,15 +8,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
-import com.points.spesqlitemanager.spesqlite.utils.JsonUtil;
+import com.points.spesqlitemanager.spesqlite.utils.SpeSqliteJsonUtil;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -32,7 +28,7 @@ public class SpeSqliteUpdateManager {
     private Context appContext = null;
 
     /**
-     *本地sd卡中的配置项
+     *本地db中的配置项
      */
     private SpeSqliteSettingModel localDBSetting = null;
 
@@ -66,7 +62,7 @@ public class SpeSqliteUpdateManager {
 
     /**
      * 数据库第一次创建时的调用函数
-     * @param db
+     * @param db db
      */
     public void create(SQLiteDatabase db){
         SpeSqliteSettingModel currentDBModel = SpeSqliteUpdateManager.getInstance().currentAppDBSetting();
@@ -84,7 +80,7 @@ public class SpeSqliteUpdateManager {
                 }
             }
             sql+=")";
-            db.execSQL(sql);
+            executeSQL(db,sql);
         }
         //记录此次数据库配置信息
         updateConfig2DB(db,currentDBModel);
@@ -94,17 +90,18 @@ public class SpeSqliteUpdateManager {
      * 升级数据库，此处涉及3种改动：1.新建表 2.老表新增字段 3.删除表
      * 1.新建表的处理思路：比较简单直接create即可
      * 2.老表新增字段需要遍历db中的json表字段明细和当前app中的json明细
-     * @param db
+     * @param db db
      */
-    public void upgrade(SpeSqliteDBService dbHelper,SQLiteDatabase db){
+    public void upgrade(SQLiteDatabase db){
         SpeSqliteSettingModel newConfig = this.currentAppDBSetting();
         SpeSqliteSettingModel localConfig = this.getAppLoclDBSetting(db);
-        if(localConfig.dbVersion< newConfig.dbVersion){
+        if(localConfig.dbVersion< newConfig.dbVersion){//通过dbversion直接判断是否要升级
             for(int j=0;j<newConfig.dbTables.size();j++){
                 SpeSqliteTableSettingModel _new = newConfig.dbTables.get(j);
                 for(int i=0;i<localConfig.dbTables.size();i++){
                     SpeSqliteTableSettingModel _local = localConfig.dbTables.get(i);
                     if(_local.tableName.equals(_new.tableName)){//找到，再判断字段是否有新增
+                        _local.indexed = true;//被比较过,该表不用删除
                         if(_local.columns.size()<_new.columns.size()){
                             //执行alert去新增字段 //
                             alterCoulmns(db,_local,_new);
@@ -116,11 +113,35 @@ public class SpeSqliteUpdateManager {
                 createTableSQL(db,_new);
             }
 
-        }
-        updateConfig2DB(db,newConfig);
+            //针对被废弃的表需要在本地库中删除
+            for(int i=0;i<localConfig.dbTables.size();i++){
+                SpeSqliteTableSettingModel table = localConfig.dbTables.get(i);
+                if(!table.indexed){
+                    dropTables(db,localConfig.dbTables.get(i));
+                }
+            }
 
+            //升级本地数据配置
+            updateConfig2DB(db,newConfig);
+        }
     }
 
+    /**
+     * 移除老表
+     * @param db
+     * @param table
+     */
+    private void dropTables(SQLiteDatabase db,SpeSqliteTableSettingModel table){
+        String sql = "DROP TABLE IF EXISTS "+table.tableName;
+        executeSQL(db,sql);
+    }
+
+    /**
+     * 老表新增字段
+     * @param db db
+     * @param _old 老表字段配置
+     * @param _new 表新字段配置
+     */
     private void alterCoulmns(SQLiteDatabase db,SpeSqliteTableSettingModel _old,SpeSqliteTableSettingModel _new){
         //alter table contact add column safecompany TEXT"
         for(int i=0;i<_new.columns.size();i++){
@@ -130,10 +151,16 @@ public class SpeSqliteUpdateManager {
                 sql+=column.key;
                 sql+=" ";
                 sql+= column.keyType;
-                db.execSQL(sql);
+                executeSQL(db,sql);
             }
         }
     }
+
+    /**
+     * 新增表
+     * @param db db
+     * @param table 表配置
+     */
     private void createTableSQL(SQLiteDatabase db,SpeSqliteTableSettingModel table){
         String sql = " create table if not exists "+table.tableName+" (";
         for(int j=0;j<table.columns.size();j++){
@@ -146,22 +173,22 @@ public class SpeSqliteUpdateManager {
                 sql+=",";
             }
         }
-        db.execSQL(sql);
+        executeSQL(db,sql);
     }
 
     /**
      * 从assets中获取数据库配置信息，如果没有需要初始化一个
-     * @return
+     * @return json
      */
     public String getCurrentDBJson() {
-        currentDBJson = JsonUtil.getJson(kDBJsonName,this.appContext);
+        currentDBJson = SpeSqliteJsonUtil.getJson(kDBJsonName,this.appContext);
         return currentDBJson;
     }
 
     /**
      * 当数据库升级完毕后，需要将此次数据库配置更新数据库中的dbconfig表,以便给下次升级数据库时的比较
-     * @param db
-     * @param currentDBConfig
+     * @param db db
+     * @param currentDBConfig 当前最新db配置
      */
     public void updateConfig2DB(SQLiteDatabase db,SpeSqliteSettingModel currentDBConfig){
         //先删除之前的记录
@@ -174,6 +201,11 @@ public class SpeSqliteUpdateManager {
         db.insert("dbconfig",null,cv);
     }
 
+    /**
+     * 获取上次数据库配置
+     * @param db db
+     * @return 上次数据库配置
+     */
     public SpeSqliteSettingModel getAppLoclDBSetting(SQLiteDatabase db){
         Cursor c = db.rawQuery("SELECT * FROM dbconfig",new String[]{});
         SpeSqliteSettingModel model = new SpeSqliteSettingModel();
@@ -195,11 +227,25 @@ public class SpeSqliteUpdateManager {
         return model;
     }
 
+    /**
+     * 获取当前最新db配置
+     * @return 当前最新db配置
+     */
     public SpeSqliteSettingModel currentAppDBSetting(){
         SpeSqliteSettingModel model = gson.fromJson(this.getCurrentDBJson(), SpeSqliteSettingModel.class);
         if(model.dbName.equals("temp")){
             Log.e("SpeSqliteUpdateManager","需要在assets中新建json文件");
         }
         return model;
+    }
+
+    /**
+     * 真正执行sql
+     * @param db db
+     * @param sql sql
+     */
+    private void  executeSQL(SQLiteDatabase db,String sql){
+        Log.e("SpeSqliteUpdateManager",sql);
+        db.execSQL(sql);
     }
 }

@@ -17,4 +17,9 @@ public class SpeSqliteTableSettingModel {
      */
     public ArrayList<SpeSqliteColumnSettingModel> columns;
 
+    /**
+     * 是否被索引过：代表是否在新表里被删除了
+     */
+    public  boolean indexed;
+
 }
