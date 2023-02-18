@@ -1,6 +1,6 @@
 {
   "dbName": "localdb",
-  "dbVersion": 1 ,
+  "dbVersion":9 ,
   "dbTables": [
     {
       "tableName":"dbconfig",
@@ -29,7 +29,46 @@
         {
           "key": "name",
           "keyType": "TEXT"
+        },
+        {
+          "key": "age",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "sex",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "tall",
+          "keyType": "TEXT"
         }
+
+      ]
+    },
+    {
+      "tableName":"teacher2",
+      "columns":[
+        {
+          "key": "id",
+          "keyType": "INTEGER PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "key": "name",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "age",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "sex",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "tall",
+          "keyType": "TEXT"
+        }
+
       ]
     }
   ]
