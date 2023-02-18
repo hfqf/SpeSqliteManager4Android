@@ -11,7 +11,7 @@
 # SpeSqliteManager4Android
 
 #### 介绍
-一个轻量级无侵入式管理android数据库自动升级的管理类(支持SQLiteOpenHelper、room)
+一个轻量级无侵入式管理android数据库自动升级的管理类(支持SQLiteOpenHelper、room(编码中))
 
 #### 实际导入代码
 ![db](./shot2.png)
