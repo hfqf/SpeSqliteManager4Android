@@ -37,41 +37,7 @@
         {
           "key": "sex",
           "keyType": "TEXT"
-<<<<<<< HEAD
-        },
-        {
-          "key": "tall",
-          "keyType": "TEXT"
         }
-
-      ]
-    },
-    {
-      "tableName":"teacher2",
-      "columns":[
-        {
-          "key": "id",
-          "keyType": "INTEGER PRIMARY KEY AUTOINCREMENT"
-        },
-        {
-          "key": "name",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "age",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "sex",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "tall",
-          "keyType": "TEXT"
-=======
->>>>>>> d8d557538928bf1709abf9f9fe10a287efe685b6
-        }
-
       ]
     }
   ]
