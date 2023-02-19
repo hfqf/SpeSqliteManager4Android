@@ -36,6 +36,9 @@ import com.points.spesqlitemanager.spesqlite.SpeSqliteUpdateManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
@@ -69,13 +72,19 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         SpeSqliteDBService.getInstance(this);
 
+//        Migration newMigration = new Migration(SpeSqliteUpdateManager.getInstance().getAppLoclDBSetting(db.getOpenHelper()), 3) {
+//            @Override
+//            public void migrate(SupportSQLiteDatabase database) {
+//                database.execSQL("alter table notice add column 'age' Text");
+//            }
+//        };
+
+        ArrayList<Migration> arrMigration = new ArrayList<>();
+        Migration[] arrMigration2 = (Migration[]) arrMigration.toArray();
+
         db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "myapp_db").addCallback(new RoomDatabase.Callback() {
-            @Override
-            public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
-                super.onCreate(db);
-            }
-        }).addMigrations(MIGRATION_1_2,MIGRATION_2_3).build();
+                AppDatabase.class, "myapp_db").addMigrations(arrMigration2).build();
+
         ServerModel model = new ServerModel();
         model.setId("1");
         model.setHost("1");
