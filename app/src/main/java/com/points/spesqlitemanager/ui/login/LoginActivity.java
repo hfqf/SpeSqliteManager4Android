@@ -16,8 +16,10 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -51,20 +53,14 @@ public class LoginActivity extends AppCompatActivity {
         }).start();
     }
 
-    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+
+    Migration newMigration = new Migration(db.getOpenHelper().getWritableDatabase().getVersion()
+            , SpeSqliteUpdateManager.getInstance().currentAppDBSetting().dbVersion) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS notice (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,orderId INTEGER NOT NULL, title TEXT)");
+            Log.e("SpeSqliteUpdateManager","migrate");
         }
     };
-
-    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
-        @Override
-        public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("alter table notice add column 'age' Text");
-        }
-    };
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,18 +68,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         SpeSqliteDBService.getInstance(this);
 
-//        Migration newMigration = new Migration(SpeSqliteUpdateManager.getInstance().getAppLoclDBSetting(db.getOpenHelper()), 3) {
-//            @Override
-//            public void migrate(SupportSQLiteDatabase database) {
-//                database.execSQL("alter table notice add column 'age' Text");
-//            }
-//        };
 
-        ArrayList<Migration> arrMigration = new ArrayList<>();
-        Migration[] arrMigration2 = (Migration[]) arrMigration.toArray();
 
+
+        //room根据模型自动创建数据库
         db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "myapp_db").addMigrations(arrMigration2).build();
+                AppDatabase.class, SpeSqliteUpdateManager.getInstance().currentAppDBSetting().dbName).addMigrations().build();
 
         ServerModel model = new ServerModel();
         model.setId("1");
@@ -93,12 +83,19 @@ public class LoginActivity extends AppCompatActivity {
         model.setVersion("1");
 
         NoticeModel model2 = new NoticeModel();
-//        model2.setId("1");
-        model2.setId("2");
+        model2.setId("1");
+//        model2.setId("2");
         model2.setOrderId(2);
         model2.setTitle("1");
-        model2.setAge("1");
+//        model2.setAge("1");
         insert(model,model2);
+
+
+
+
+        ArrayList<Migration> arrMigration = new ArrayList<>();
+        arrMigration.add(newMigration);
+        Migration[] arrMigration2 = (Migration[]) arrMigration.toArray();
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
