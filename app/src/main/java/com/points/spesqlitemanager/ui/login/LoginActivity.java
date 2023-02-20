@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -54,13 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    Migration newMigration = new Migration(db.getOpenHelper().getWritableDatabase().getVersion()
-            , SpeSqliteUpdateManager.getInstance().currentAppDBSetting().dbVersion) {
-        @Override
-        public void migrate(SupportSQLiteDatabase database) {
-            Log.e("SpeSqliteUpdateManager","migrate");
-        }
-    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,12 +63,20 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         SpeSqliteDBService.getInstance(this);
 
-
-
+        SQLiteDatabase database = SpeSqliteDBService.getInstance(this).getDB();
+        int start = SpeSqliteUpdateManager.getInstance().getAppLoclDBSetting(database).dbVersion;
+        int end = SpeSqliteUpdateManager.getInstance().currentAppDBSetting().dbVersion;
+        Migration newMigration = new Migration(9,10) {
+            @Override
+            public void migrate(SupportSQLiteDatabase database) {
+                Log.e("SpeSqliteUpdateManager","migrate");
+                SpeSqliteUpdateManager.getInstance().upgrade(SpeSqliteDBService.getInstance(getApplication()).getDB(),database);
+            }
+        };
 
         //room根据模型自动创建数据库
         db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, SpeSqliteUpdateManager.getInstance().currentAppDBSetting().dbName).addMigrations().build();
+                AppDatabase.class, "local2").addMigrations(newMigration).build();
 
         ServerModel model = new ServerModel();
         model.setId("1");
@@ -93,9 +96,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-        ArrayList<Migration> arrMigration = new ArrayList<>();
-        arrMigration.add(newMigration);
-        Migration[] arrMigration2 = (Migration[]) arrMigration.toArray();
+//        ArrayList<Migration> arrMigration = new ArrayList<Migration>();
+//        arrMigration.add(newMigration);
+//        Migration[] arrMigration2 = (Migration[]) arrMigration.toArray();
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);

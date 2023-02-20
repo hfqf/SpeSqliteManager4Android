@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import androidx.sqlite.db.SupportSQLiteDatabase;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
@@ -14,6 +16,7 @@ import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
 import com.points.spesqlitemanager.spesqlite.utils.SpeSqliteJsonUtil;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -82,8 +85,11 @@ public class SpeSqliteUpdateManager {
             sql+=")";
             executeSQL(db,sql);
         }
-        //记录此次数据库配置信息
-        updateConfig2DB(db,currentDBModel);
+        //SQLiteDatabase数据库才需要升级本地数据配置
+        if(db instanceof SQLiteDatabase){
+            SQLiteDatabase _db = (SQLiteDatabase)db;
+            updateConfig2DB(_db,currentDBModel);
+        }
     }
 
     /**
@@ -92,9 +98,9 @@ public class SpeSqliteUpdateManager {
      * 2.老表新增字段需要遍历db中的json表字段明细和当前app中的json明细
      * @param db db
      */
-    public void upgrade(SQLiteDatabase db){
+    public  void upgrade(SQLiteDatabase configdb,SupportSQLiteDatabase db){
         SpeSqliteSettingModel newConfig = this.currentAppDBSetting();
-        SpeSqliteSettingModel localConfig = this.getAppLoclDBSetting(db);
+        SpeSqliteSettingModel localConfig = this.getAppLoclDBSetting(configdb);
         if(localConfig.dbVersion< newConfig.dbVersion){//通过dbversion直接判断是否要升级
             for(int j=0;j<newConfig.dbTables.size();j++){
                 SpeSqliteTableSettingModel _new = newConfig.dbTables.get(j);
@@ -104,25 +110,23 @@ public class SpeSqliteUpdateManager {
                         _local.indexed = true;//被比较过,该表不用删除
                         if(_local.columns.size()<_new.columns.size()){
                             //执行alert去新增字段 //
-                            alterCoulmns(db,_local,_new);
+                            alterCoulmns(db != null?db:configdb,_local,_new);
                         }
                         break;//只要匹配到就直接跳出该层循环
                     }
                 }
                 //本地数据没找到这个表需要新增
-                createTableSQL(db,_new);
+                createTableSQL(db != null?db:configdb,_new);
             }
-
             //针对被废弃的表需要在本地库中删除
             for(int i=0;i<localConfig.dbTables.size();i++){
                 SpeSqliteTableSettingModel table = localConfig.dbTables.get(i);
                 if(!table.indexed){
-                    dropTables(db,localConfig.dbTables.get(i));
+                    dropTables(db != null?db:configdb,localConfig.dbTables.get(i));
                 }
             }
-
             //升级本地数据配置
-            updateConfig2DB(db,newConfig);
+            updateConfig2DB(configdb,newConfig);
         }
     }
 
@@ -131,7 +135,7 @@ public class SpeSqliteUpdateManager {
      * @param db
      * @param table
      */
-    private void dropTables(SQLiteDatabase db,SpeSqliteTableSettingModel table){
+    private <T> void dropTables(T db,SpeSqliteTableSettingModel table){
         String sql = "DROP TABLE IF EXISTS "+table.tableName;
         executeSQL(db,sql);
     }
@@ -142,8 +146,7 @@ public class SpeSqliteUpdateManager {
      * @param _old 老表字段配置
      * @param _new 表新字段配置
      */
-    private void alterCoulmns(SQLiteDatabase db,SpeSqliteTableSettingModel _old,SpeSqliteTableSettingModel _new){
-        //alter table contact add column safecompany TEXT"
+    private <T> void alterCoulmns(T db,SpeSqliteTableSettingModel _old,SpeSqliteTableSettingModel _new){
         for(int i=0;i<_new.columns.size();i++){
             if(i>=_old.columns.size()){
                 SpeSqliteColumnSettingModel column = _new.columns.get(i);
@@ -161,7 +164,7 @@ public class SpeSqliteUpdateManager {
      * @param db db
      * @param table 表配置
      */
-    private void createTableSQL(SQLiteDatabase db,SpeSqliteTableSettingModel table){
+    private <T> void createTableSQL(T db,SpeSqliteTableSettingModel table){
         String sql = " create table if not exists "+table.tableName+" (";
         for(int j=0;j<table.columns.size();j++){
             SpeSqliteColumnSettingModel column = table.columns.get(j);
@@ -190,7 +193,7 @@ public class SpeSqliteUpdateManager {
      * @param db db
      * @param currentDBConfig 当前最新db配置
      */
-    public void updateConfig2DB(SQLiteDatabase db,SpeSqliteSettingModel currentDBConfig){
+    public  void updateConfig2DB(SQLiteDatabase db,SpeSqliteSettingModel currentDBConfig){
         //先删除之前的记录
         db.delete("dbconfig", "", new String[]{});
         //再直接插入新配置
@@ -244,8 +247,14 @@ public class SpeSqliteUpdateManager {
      * @param db db
      * @param sql sql
      */
-    private void  executeSQL(SQLiteDatabase db,String sql){
+    private <T> void  executeSQL(T  db,String sql){
         Log.e("SpeSqliteUpdateManager",sql);
-        db.execSQL(sql);
+        if(db instanceof SQLiteDatabase){
+            SQLiteDatabase _db = (SQLiteDatabase)db;
+            _db.execSQL(sql);
+        }else if(db instanceof SupportSQLiteDatabase){
+            SupportSQLiteDatabase _db = (SupportSQLiteDatabase)db;
+            _db.execSQL(sql);
+        }
     }
 }

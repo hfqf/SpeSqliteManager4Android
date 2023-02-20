@@ -39,7 +39,10 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) {
-         SpeSqliteUpdateManager.getInstance().upgrade(db);
+         SpeSqliteUpdateManager.getInstance().upgrade(db,null);
+    }
+    public  SQLiteDatabase getDB(){
+        return db;
     }
 }
 
