@@ -1,6 +1,6 @@
 {
   "dbName": "localdb",
-  "dbVersion": 10 ,
+  "dbVersion": 1 ,
   "dbTables": [
     {
       "tableName":"dbconfig",
@@ -28,30 +28,6 @@
         },
         {
           "key": "name",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "age",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "sex",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "tall",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "tall2",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "tall3",
-          "keyType": "TEXT"
-        },
-        {
-          "key": "tall3",
           "keyType": "TEXT"
         }
       ]

@@ -248,7 +248,7 @@ public class SpeSqliteUpdateManager {
      * @param sql sql
      */
     private <T> void  executeSQL(T  db,String sql){
-        Log.e("SpeSqliteUpdateManager",sql);
+        Log.e("SpeSqliteUpdateManager",db.getClass().getName()+sql);
         if(db instanceof SQLiteDatabase){
             SQLiteDatabase _db = (SQLiteDatabase)db;
             _db.execSQL(sql);

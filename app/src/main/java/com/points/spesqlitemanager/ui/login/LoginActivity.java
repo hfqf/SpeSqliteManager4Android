@@ -45,12 +45,12 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-    private static AppDatabase db;
+    private static AppDatabase roomdb;
 
     private void insert(ServerModel model, NoticeModel model2) {
         new Thread(() -> {
-            db.serverDao().insert(model);
-            db.noticeDao().insert(model2);
+            roomdb.serverDao().insert(model);
+            roomdb.noticeDao().insert(model2);
         }).start();
     }
 
@@ -61,44 +61,48 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        SpeSqliteDBService.getInstance(this);
-
-        SQLiteDatabase database = SpeSqliteDBService.getInstance(this).getDB();
-        int start = SpeSqliteUpdateManager.getInstance().getAppLoclDBSetting(database).dbVersion;
-        int end = SpeSqliteUpdateManager.getInstance().currentAppDBSetting().dbVersion;
-        Migration newMigration = new Migration(9,10) {
-            @Override
-            public void migrate(SupportSQLiteDatabase database) {
-                Log.e("SpeSqliteUpdateManager","migrate");
-                SpeSqliteUpdateManager.getInstance().upgrade(SpeSqliteDBService.getInstance(getApplication()).getDB(),database);
-            }
-        };
-
         //room根据模型自动创建数据库
-        db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "local2").addMigrations(newMigration).build();
-
-        ServerModel model = new ServerModel();
-        model.setId("1");
-        model.setHost("1");
-        model.setLang("1");
-        model.setName("1");
-        model.setVersion("1");
-
-        NoticeModel model2 = new NoticeModel();
-        model2.setId("1");
-//        model2.setId("2");
-        model2.setOrderId(2);
-        model2.setTitle("1");
-//        model2.setAge("1");
-        insert(model,model2);
 
 
 
+        SpeSqliteDBService.getInstance(this, new SpeSqliteDBService.OnUpdateInterface() {
+            @Override
+            public void onCreate(SQLiteDatabase db) {
+                roomdb = Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "local2").build();
 
-//        ArrayList<Migration> arrMigration = new ArrayList<Migration>();
-//        arrMigration.add(newMigration);
-//        Migration[] arrMigration2 = (Migration[]) arrMigration.toArray();
+                ServerModel model = new ServerModel();
+                model.setId("1");
+                model.setHost("1");
+                model.setLang("1");
+                model.setName("1");
+                model.setVersion("1");
+
+                NoticeModel model2 = new NoticeModel();
+                model2.setId("1");
+                model2.setOrderId(2);
+                model2.setTitle("1");
+                insert(model,model2);
+            }
+
+            @Override
+            public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+                Migration newMigration = new Migration(oldVersion,newVersion) {
+                    @Override
+                    public void migrate(SupportSQLiteDatabase database) {
+                        Log.e("SpeSqliteUpdateManager","migrate");
+                        SpeSqliteUpdateManager.getInstance().upgrade(db,database);
+                    }
+                };
+
+               roomdb = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "local2").addMigrations(newMigration).build();
+            }
+        });
+
+
+
+
+
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);

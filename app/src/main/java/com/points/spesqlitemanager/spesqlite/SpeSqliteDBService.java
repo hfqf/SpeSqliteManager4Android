@@ -14,17 +14,29 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
     private static SpeSqliteDBService instance  = null;
     private Context context = null;
     private SQLiteDatabase db = null;
-    public static synchronized SpeSqliteDBService getInstance(Context context) {
+    public OnUpdateInterface listener;
+    public interface  OnUpdateInterface{
+        public void onCreate(SQLiteDatabase db);
+        public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion);
+    }
+    public static synchronized SpeSqliteDBService getInstance(Context context,OnUpdateInterface listener) {
         if (instance == null){
             synchronized (SpeSqliteDBService.class){
                 if (instance == null){
                     instance = new SpeSqliteDBService(context);
+                    if(listener != null){
+                        instance.listener = listener;
+                    }
                     instance.context = context;
                     instance.db = instance.getWritableDatabase();
                 }
             }
         }
         return instance;
+    }
+
+    public void setListener(OnUpdateInterface listener) {
+        instance.listener = listener;
     }
 
     public SpeSqliteDBService(Context context) {
@@ -34,15 +46,21 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        if(instance.listener != null){
+            instance.listener.onCreate(db);
+        }
         SpeSqliteUpdateManager.getInstance().create(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) {
-         SpeSqliteUpdateManager.getInstance().upgrade(db,null);
+        if(instance.listener != null){
+            instance.listener.onUpgrade(db,oldVersion,newVersion);
+        }
+        SpeSqliteUpdateManager.getInstance().upgrade(db,null);
     }
     public  SQLiteDatabase getDB(){
-        return db;
+        return instance.db;
     }
 }
 
