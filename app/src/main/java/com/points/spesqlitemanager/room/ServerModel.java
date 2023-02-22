@@ -23,6 +23,8 @@ public class ServerModel {
     private String version;
     @ColumnInfo
     private String lang;
+    @ColumnInfo
+    private String k1;
 
     public String getId() {
         return id;
@@ -64,4 +66,11 @@ public class ServerModel {
         this.lang = lang;
     }
 
+    public void setK1(String k1) {
+        this.k1 = k1;
+    }
+
+    public String getK1() {
+        return k1;
+    }
 }

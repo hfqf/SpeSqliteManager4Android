@@ -1,6 +1,6 @@
 {
   "dbName": "localdb",
-  "dbVersion": 1 ,
+  "dbVersion": 2 ,
   "dbTables": [
     {
       "tableName":"dbconfig",

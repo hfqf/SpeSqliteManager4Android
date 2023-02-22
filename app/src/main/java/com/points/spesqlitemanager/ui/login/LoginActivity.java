@@ -68,23 +68,32 @@ public class LoginActivity extends AppCompatActivity {
         SpeSqliteDBService.getInstance(this, new SpeSqliteDBService.OnUpdateInterface() {
             @Override
             public void onCreate(SQLiteDatabase db) {
-                roomdb = Room.databaseBuilder(getApplicationContext(),
-                        AppDatabase.class, "local2").build();
+                Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "local2").addCallback(new RoomDatabase.Callback() {
+                    @Override
+                    public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
+                        super.onCreate(db);
+                        ServerModel model = new ServerModel();
+                        model.setId("1");
+                        model.setHost("1");
+                        model.setLang("1");
+                        model.setName("1");
+                        model.setVersion("1");
 
-                ServerModel model = new ServerModel();
-                model.setId("1");
-                model.setHost("1");
-                model.setLang("1");
-                model.setName("1");
-                model.setVersion("1");
+                        NoticeModel model2 = new NoticeModel();
+                        model2.setId("1");
+                        model2.setOrderId(2);
+                        model2.setTitle("1");
+                        insert(model,model2);
+                    }
 
-                NoticeModel model2 = new NoticeModel();
-                model2.setId("1");
-                model2.setOrderId(2);
-                model2.setTitle("1");
-                insert(model,model2);
+                    @Override
+                    public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
+                        super.onOpen(db);
+
+                    }
+                }).build();
             }
-
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 Migration newMigration = new Migration(oldVersion,newVersion) {
@@ -94,8 +103,25 @@ public class LoginActivity extends AppCompatActivity {
                         SpeSqliteUpdateManager.getInstance().upgrade(db,database);
                     }
                 };
+                roomdb = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "local2").addMigrations(newMigration).addCallback(new RoomDatabase.Callback() {
+                   @Override
+                   public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
+                       super.onCreate(db);
+                   }
 
-               roomdb = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "local2").addMigrations(newMigration).build();
+                   @Override
+                   public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
+                       super.onOpen(db);
+                   }
+               }).build();
+                roomdb.getOpenHelper().getWritableDatabase();
+            }
+
+            @Override
+            public void onOpen(SQLiteDatabase db) {
+               roomdb = Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "local2").build();
+               roomdb.getOpenHelper().getWritableDatabase();
             }
         });
 

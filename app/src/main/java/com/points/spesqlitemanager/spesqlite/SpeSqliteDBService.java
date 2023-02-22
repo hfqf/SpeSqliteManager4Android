@@ -17,6 +17,7 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
     public OnUpdateInterface listener;
     public interface  OnUpdateInterface{
         public void onCreate(SQLiteDatabase db);
+        public void onOpen(SQLiteDatabase db);
         public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion);
     }
     public static synchronized SpeSqliteDBService getInstance(Context context,OnUpdateInterface listener) {
@@ -59,6 +60,16 @@ public class SpeSqliteDBService extends SQLiteOpenHelper {
         }
         SpeSqliteUpdateManager.getInstance().upgrade(db,null);
     }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if(instance.listener != null){
+            instance.listener.onOpen(db);
+        }
+
+    }
+
     public  SQLiteDatabase getDB(){
         return instance.db;
     }
