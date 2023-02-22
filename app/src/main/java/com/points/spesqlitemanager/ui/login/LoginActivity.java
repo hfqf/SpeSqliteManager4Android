@@ -68,11 +68,16 @@ public class LoginActivity extends AppCompatActivity {
         SpeSqliteDBService.getInstance(this, new SpeSqliteDBService.OnUpdateInterface() {
             @Override
             public void onCreate(SQLiteDatabase db) {
-                Room.databaseBuilder(getApplicationContext(),
+               roomdb = Room.databaseBuilder(getApplicationContext(),
                         AppDatabase.class, "local2").addCallback(new RoomDatabase.Callback() {
                     @Override
                     public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
+                    }
+
+                    @Override
+                    public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
+                        super.onOpen(db);
                         ServerModel model = new ServerModel();
                         model.setId("1");
                         model.setHost("1");
@@ -86,13 +91,9 @@ public class LoginActivity extends AppCompatActivity {
                         model2.setTitle("1");
                         insert(model,model2);
                     }
-
-                    @Override
-                    public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
-                        super.onOpen(db);
-
-                    }
                 }).build();
+               //必须分步骤执行，否则影响database的回调方法执行
+                roomdb.getOpenHelper().getWritableDatabase();
             }
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -103,17 +104,8 @@ public class LoginActivity extends AppCompatActivity {
                         SpeSqliteUpdateManager.getInstance().upgrade(db,database);
                     }
                 };
-                roomdb = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "local2").addMigrations(newMigration).addCallback(new RoomDatabase.Callback() {
-                   @Override
-                   public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
-                       super.onCreate(db);
-                   }
-
-                   @Override
-                   public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
-                       super.onOpen(db);
-                   }
-               }).build();
+                roomdb = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "local2").addMigrations(newMigration).build();
+                //必须分步骤执行，否则影响database的回调方法执行
                 roomdb.getOpenHelper().getWritableDatabase();
             }
 
@@ -121,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onOpen(SQLiteDatabase db) {
                roomdb = Room.databaseBuilder(getApplicationContext(),
                         AppDatabase.class, "local2").build();
+                //必须分步骤执行，否则影响database的回调方法执行
                roomdb.getOpenHelper().getWritableDatabase();
             }
         });
