@@ -5,9 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import androidx.sqlite.db.SupportSQLiteDatabase;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
@@ -15,8 +13,6 @@ import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
 import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
 import com.points.spesqlitemanager.spesqlite.utils.SpeSqliteJsonUtil;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -44,6 +40,9 @@ public class SpeSqliteUpdateManager {
 
     private String currentDBJson = null;
 
+    /**
+     * 对应assets中的文件名
+     */
     private static final String kDBJsonName  = "dbupdate.json";
 
     private SpeSqliteUpdateManager() {
@@ -94,6 +93,7 @@ public class SpeSqliteUpdateManager {
 
     /**
      * 升级数据库，此处涉及3种改动：1.新建表 2.老表新增字段 3.删除表
+     * 注意该方法会被两个数据库依次触发，所以需要控制
      * 1.新建表的处理思路：比较简单直接create即可
      * 2.老表新增字段需要遍历db中的json表字段明细和当前app中的json明细
      * @param db db
@@ -101,7 +101,15 @@ public class SpeSqliteUpdateManager {
     public  void upgrade(SQLiteDatabase configdb,SupportSQLiteDatabase db){
         SpeSqliteSettingModel newConfig = this.currentAppDBSetting();
         SpeSqliteSettingModel localConfig = this.getAppLoclDBSetting(configdb);
+        //该处判断可以不要，但是加了后(daupdate.json的dbversion字段)效率更高
         if(localConfig.dbVersion< newConfig.dbVersion){//通过dbversion直接判断是否要升级
+            //防止room数据未创建表,就alter
+            if(db != null){
+                for(int i=0;i<localConfig.dbTables.size();i++) {
+                    SpeSqliteTableSettingModel _local = localConfig.dbTables.get(i);
+                    createTableSQL(db,_local);
+                }
+            }
             for(int j=0;j<newConfig.dbTables.size();j++){
                 SpeSqliteTableSettingModel _new = newConfig.dbTables.get(j);
                 for(int i=0;i<localConfig.dbTables.size();i++){
@@ -125,18 +133,21 @@ public class SpeSqliteUpdateManager {
                     dropTables(db != null?db:configdb,localConfig.dbTables.get(i));
                 }
             }
-            //升级本地数据配置
-            updateConfig2DB(configdb,newConfig);
+            //只有当是SQLiteDatabase升级时才能本地数据配置
+            if(db == null){
+                updateConfig2DB(configdb,newConfig);
+            }
         }
     }
 
     /**
      * 移除老表
-     * @param db
-     * @param table
+     * @param db db
+     * @param table table
+     * @param <T> 范型（需考虑SQLiteOpenHelper和room）
      */
     private <T> void dropTables(T db,SpeSqliteTableSettingModel table){
-        String sql = "DROP TABLE IF EXISTS "+table.tableName;
+        String sql = " DROP TABLE IF EXISTS "+table.tableName;
         executeSQL(db,sql);
     }
 
@@ -145,6 +156,7 @@ public class SpeSqliteUpdateManager {
      * @param db db
      * @param _old 老表字段配置
      * @param _new 表新字段配置
+     * @param <T> 范型（需考虑SQLiteOpenHelper和room）
      */
     private <T> void alterCoulmns(T db,SpeSqliteTableSettingModel _old,SpeSqliteTableSettingModel _new){
         for(int i=0;i<_new.columns.size();i++){
@@ -163,6 +175,7 @@ public class SpeSqliteUpdateManager {
      * 新增表
      * @param db db
      * @param table 表配置
+     * @param <T> 范型（需考虑SQLiteOpenHelper和room）
      */
     private <T> void createTableSQL(T db,SpeSqliteTableSettingModel table){
         String sql = " create table if not exists "+table.tableName+" (";
@@ -246,6 +259,7 @@ public class SpeSqliteUpdateManager {
      * 真正执行sql
      * @param db db
      * @param sql sql
+     * @param <T> 范型（需考虑SQLiteOpenHelper和room）
      */
     private <T> void  executeSQL(T  db,String sql){
         Log.e("SpeSqliteUpdateManager",db.getClass().getName()+sql);

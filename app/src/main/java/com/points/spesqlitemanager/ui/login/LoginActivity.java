@@ -2,25 +2,20 @@ package com.points.spesqlitemanager.ui.login;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -32,17 +27,10 @@ import android.widget.Toast;
 
 import com.points.spesqlitemanager.R;
 import com.points.spesqlitemanager.room.AppDatabase;
-import com.points.spesqlitemanager.room.NoticeModel;
 import com.points.spesqlitemanager.room.ServerModel;
 import com.points.spesqlitemanager.spesqlite.SpeSqliteBaseInterface;
 import com.points.spesqlitemanager.spesqlite.SpeSqliteOpenHelperService;
 import com.points.spesqlitemanager.spesqlite.SpeSqliteRoomService;
-import com.points.spesqlitemanager.spesqlite.SpeSqliteUpdateManager;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,6 +39,15 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+    /**
+     * 临时测试方法
+     * @param model
+     */
+    private void insert(RoomDatabase roomm,ServerModel model) {
+        new Thread(() -> {
+            ((AppDatabase)roomm).serverDao().insert(model);
+        }).start();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,8 +56,54 @@ public class LoginActivity extends AppCompatActivity {
         //room根据模型自动创建数据库
 
 
-        SpeSqliteOpenHelperService.getInstance(this);
-        SpeSqliteRoomService.getInstance(this,AppDatabase.class);
+        //1.直接创建SQLiteOpenHelper
+//        SpeSqliteOpenHelperService.getInstance(this);
+        //2.创建SQLiteOpenHelper且需要监听db
+//          SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
+//              @Override
+//              public <T> void onCreate(T db, RoomDatabase room) {
+//
+//              }
+//
+//              @Override
+//              public <T> void onOpen(T db, RoomDatabase room) {
+//
+//              }
+//
+//              @Override
+//              public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
+//
+//              }
+//          });
+        //3.直接创建room
+//        SpeSqliteRoomService.getInstance(this,AppDatabase.class);
+
+        //4.创建room，且需要监听db
+        SpeSqliteRoomService.getInstance(this,AppDatabase.class,new SpeSqliteBaseInterface() {
+            @Override
+            public <T> void onCreate(T db, RoomDatabase room) {
+                //TODO  删除测试插入代码
+                if(room != null){
+                    ServerModel model = new ServerModel();
+                    model.setId("1");
+                    model.setHost("1");
+                    model.setLang("1");
+                    model.setName("1");
+                    model.setVersion("1");
+                    insert(room,model);
+                }
+
+            }
+            @Override
+            public <T> void onOpen(T db, RoomDatabase room) {
+
+            }
+
+            @Override
+            public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
+
+            }
+        });
 
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
