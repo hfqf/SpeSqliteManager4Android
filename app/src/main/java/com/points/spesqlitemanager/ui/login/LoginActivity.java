@@ -34,7 +34,9 @@ import com.points.spesqlitemanager.R;
 import com.points.spesqlitemanager.room.AppDatabase;
 import com.points.spesqlitemanager.room.NoticeModel;
 import com.points.spesqlitemanager.room.ServerModel;
-import com.points.spesqlitemanager.spesqlite.SpeSqliteDBService;
+import com.points.spesqlitemanager.spesqlite.SpeSqliteBaseInterface;
+import com.points.spesqlitemanager.spesqlite.SpeSqliteOpenHelperService;
+import com.points.spesqlitemanager.spesqlite.SpeSqliteRoomService;
 import com.points.spesqlitemanager.spesqlite.SpeSqliteUpdateManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,14 +47,7 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-    private static AppDatabase roomdb;
 
-    private void insert(ServerModel model, NoticeModel model2) {
-        new Thread(() -> {
-            roomdb.serverDao().insert(model);
-            roomdb.noticeDao().insert(model2);
-        }).start();
-    }
 
 
 
@@ -64,63 +59,8 @@ public class LoginActivity extends AppCompatActivity {
         //room根据模型自动创建数据库
 
 
-
-        SpeSqliteDBService.getInstance(this, new SpeSqliteDBService.OnUpdateInterface() {
-            @Override
-            public void onCreate(SQLiteDatabase db) {
-               roomdb = Room.databaseBuilder(getApplicationContext(),
-                        AppDatabase.class, "local2").addCallback(new RoomDatabase.Callback() {
-                    @Override
-                    public void onCreate(@NonNull @NotNull SupportSQLiteDatabase db) {
-                        super.onCreate(db);
-                    }
-
-                    @Override
-                    public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
-                        super.onOpen(db);
-                        ServerModel model = new ServerModel();
-                        model.setId("1");
-                        model.setHost("1");
-                        model.setLang("1");
-                        model.setName("1");
-                        model.setVersion("1");
-
-                        NoticeModel model2 = new NoticeModel();
-                        model2.setId("1");
-                        model2.setOrderId(2);
-                        model2.setTitle("1");
-                        insert(model,model2);
-                    }
-                }).build();
-               //必须分步骤执行，否则影响database的回调方法执行
-                roomdb.getOpenHelper().getWritableDatabase();
-            }
-            @Override
-            public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-                Migration newMigration = new Migration(oldVersion,newVersion) {
-                    @Override
-                    public void migrate(SupportSQLiteDatabase database) {
-                        Log.e("SpeSqliteUpdateManager","migrate");
-                        SpeSqliteUpdateManager.getInstance().upgrade(db,database);
-                    }
-                };
-                roomdb = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "local2").addMigrations(newMigration).build();
-                //必须分步骤执行，否则影响database的回调方法执行
-                roomdb.getOpenHelper().getWritableDatabase();
-            }
-
-            @Override
-            public void onOpen(SQLiteDatabase db) {
-               roomdb = Room.databaseBuilder(getApplicationContext(),
-                        AppDatabase.class, "local2").build();
-                //必须分步骤执行，否则影响database的回调方法执行
-               roomdb.getOpenHelper().getWritableDatabase();
-            }
-        });
-
-
-
-
+        SpeSqliteOpenHelperService.getInstance(this);
+        SpeSqliteRoomService.getInstance(this,AppDatabase.class);
 
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())

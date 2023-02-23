@@ -1,6 +1,5 @@
 package com.points.spesqlitemanager.room;
 
-import com.points.spesqlitemanager.spesqlite.SpeSqliteDBService;
 import com.points.spesqlitemanager.spesqlite.SpeSqliteUpdateManager;
 
 import androidx.room.Database;
@@ -11,7 +10,7 @@ import androidx.room.RoomDatabase;
  * @brief description
  * @date 2023-02-18
  */
-@Database(entities = {ServerModel.class,NoticeModel.class}, version = 2, exportSchema = false)
+@Database(entities = {ServerModel.class,NoticeModel.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ServerDao serverDao();
     public abstract NoticeDao noticeDao();
