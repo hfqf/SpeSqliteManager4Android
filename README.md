@@ -44,35 +44,31 @@
 2.在assets目录下新建dbupdate.json
 注意:dbconfig的配置不要动，自己的表在后面新增
 
-3. SQLiteOpenHelper的调用方法
+3.SQLiteOpenHelper的调用方法
 ```
-        //1.直接创建SQLiteOpenHelper
-        SpeSqliteOpenHelperService.getInstance(this);
-        //2.创建SQLiteOpenHelper且需要监听db
-        SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
-            @Override
-            public <T> void onCreate(T db, RoomDatabase room) {
-
-            }
-
-            @Override
-            public <T> void onOpen(T db, RoomDatabase room) {
-
-            }
-
-            @Override
-            public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
-
-            }
-        });
-
+    //1.直接创建SQLiteOpenHelper
+    SpeSqliteOpenHelperService.getInstance(this);
+    //2.创建SQLiteOpenHelper且需要监听db
+    SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
+      @Override
+      public <T> void onCreate(T db, RoomDatabase room) {
+               
+      }
+      @Override
+      public <T> void onOpen(T db, RoomDatabase room) {
+                                 
+      }
+      @Override
+      public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
+                                                    
+       }
+    });                                                                                                                                                                                                                                                                                                                                                                       
 ```
-3. Room的调用方法
+4.Room的调用方法
 ```
-        //3.直接创建room
+    //3.直接创建room
         SpeSqliteRoomService.getInstance(this,AppDatabase.class);
-
-        //4.创建room，且需要监听db
+    //4.创建room，且需要监听db
         SpeSqliteRoomService.getInstance(this,AppDatabase.class,new SpeSqliteBaseInterface() {
             @Override
             public <T> void onCreate(T db, RoomDatabase room) {
@@ -97,9 +93,8 @@
             public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
 
             }
-        }); 
+        });        
 ```
-
 #### 核心代码
 > SpeSqliteUpdateManager 负责针对本地db的创建、新建表、表字段升级、删除表,通过配置的方式去升级数据库，减少代码的改动，核心思想：以静制动
 
