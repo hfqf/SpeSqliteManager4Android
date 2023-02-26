@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 
 import android.text.Editable;
@@ -28,9 +27,9 @@ import android.widget.Toast;
 import com.points.spesqlitemanager.R;
 import com.points.spesqlitemanager.room.AppDatabase;
 import com.points.spesqlitemanager.room.ServerModel;
-import com.points.spesqlitemanager.spesqlite.SpeSqliteBaseInterface;
-import com.points.spesqlitemanager.spesqlite.SpeSqliteOpenHelperService;
-import com.points.spesqlitemanager.spesqlite.SpeSqliteRoomService;
+import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteBaseInterface;
+import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteOpenHelperService;
+import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteRoomService;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -57,24 +56,24 @@ public class LoginActivity extends AppCompatActivity {
 
 
         //1.直接创建SQLiteOpenHelper
-        SpeSqliteOpenHelperService.getInstance(this);
+//        SpeSqliteOpenHelperService.getInstance(this);
         //2.创建SQLiteOpenHelper且需要监听db
-        SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
-            @Override
-            public <T> void onCreate(T db, RoomDatabase room) {
-
-            }
-
-            @Override
-            public <T> void onOpen(T db, RoomDatabase room) {
-
-            }
-
-            @Override
-            public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
-
-            }
-        });
+//        SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
+//            @Override
+//            public <T> void onCreate(T db, RoomDatabase room) {
+//
+//            }
+//
+//            @Override
+//            public <T> void onOpen(T db, RoomDatabase room) {
+//
+//            }
+//
+//            @Override
+//            public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
+//
+//            }
+//        });
         //3.直接创建room
         SpeSqliteRoomService.getInstance(this,AppDatabase.class);
 

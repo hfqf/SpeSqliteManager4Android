@@ -1,4 +1,4 @@
-package com.points.spesqlitemanager.spesqlite.bean;
+package cn.autorepairehelper.spesqlite.spesqlite.bean;
 
 /**
  * @author hfqf123@126.com

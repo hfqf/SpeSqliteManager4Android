@@ -1,2 +1,3 @@
 include ':app'
 rootProject.name = "SpeSqliteManager4Android"
+include ':app:spesqlite'

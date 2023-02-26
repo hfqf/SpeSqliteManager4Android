@@ -1,6 +1,6 @@
 package com.points.spesqlitemanager.room;
 
-import com.points.spesqlitemanager.spesqlite.SpeSqliteUpdateManager;
+import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteUpdateManager;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;

@@ -37,5 +37,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation "androidx.room:room-runtime:2.0.0"
+    implementation project(path: ':app:spesqlite')
     annotationProcessor "androidx.room:room-compiler:2.0.0"
 }

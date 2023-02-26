@@ -1,4 +1,4 @@
-package com.points.spesqlitemanager.spesqlite;
+package cn.autorepairehelper.spesqlite.spesqlite;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,10 +9,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteColumnSettingModel;
-import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteSettingModel;
-import com.points.spesqlitemanager.spesqlite.bean.SpeSqliteTableSettingModel;
-import com.points.spesqlitemanager.spesqlite.utils.SpeSqliteJsonUtil;
+import cn.autorepairehelper.spesqlite.spesqlite.bean.SpeSqliteColumnSettingModel;
+import cn.autorepairehelper.spesqlite.spesqlite.bean.SpeSqliteSettingModel;
+import cn.autorepairehelper.spesqlite.spesqlite.bean.SpeSqliteTableSettingModel;
+import cn.autorepairehelper.spesqlite.spesqlite.utils.SpeSqliteJsonUtil;
 import java.util.ArrayList;
 
 /**

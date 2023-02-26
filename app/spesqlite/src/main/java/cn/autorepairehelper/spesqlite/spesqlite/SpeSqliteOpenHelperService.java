@@ -1,4 +1,4 @@
-package com.points.spesqlitemanager.spesqlite;
+package cn.autorepairehelper.spesqlite.spesqlite;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

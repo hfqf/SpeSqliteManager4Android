@@ -1,0 +1,32 @@
+{
+  "dbName": "localdb",
+  "dbVersion": 3 ,
+  "dbTables": [
+    {
+      "tableName":"dbconfig",
+      "columns":[
+        {
+          "key": "dbversion",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "dbname",
+          "keyType": "TEXT"
+        },
+        {
+          "key": "dbtables",
+          "keyType": "TEXT"
+        }
+      ]
+    },
+    {
+      "tableName":"teacher",
+      "columns":[
+        {
+          "key": "dbversion",
+          "keyType": "TEXT"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,4 @@
-package com.points.spesqlitemanager.spesqlite;
-
-import android.database.sqlite.SQLiteDatabase;
+package cn.autorepairehelper.spesqlite.spesqlite;
 
 import androidx.room.RoomDatabase;
 
