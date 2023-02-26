@@ -38,8 +38,8 @@ public class SpeSqliteOpenHelperService extends  SpeSqliteAbstractDBService {
      * @param context context
      * @return SpeSqliteOpenHelperService
      */
-    public  static SpeSqliteOpenHelperService getInstance(Context context) {
-        return  SpeSqliteOpenHelperService.getInstance(context);
+    public  static SpeSqliteAbstractDBService getInstance(Context context) {
+        return  SpeSqliteOpenHelperService.getInstance(context,null);
     }
 
     @Override

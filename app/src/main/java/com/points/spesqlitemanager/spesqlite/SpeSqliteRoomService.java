@@ -7,7 +7,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author hfqf123@126.com
@@ -52,8 +51,8 @@ public class SpeSqliteRoomService extends  SpeSqliteAbstractDBService  {
      * @param roomDatabaseClass room数据的抽象类
      * @return SpeSqliteRoomService
      */
-    public  static SpeSqliteRoomService getInstance(Context context,Class roomDatabaseClass) {
-        return SpeSqliteRoomService.getInstance(context,roomDatabaseClass);
+    public  static SpeSqliteAbstractDBService getInstance(Context context,Class roomDatabaseClass) {
+        return SpeSqliteRoomService.getInstance(context,roomDatabaseClass,null);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class SpeSqliteRoomService extends  SpeSqliteAbstractDBService  {
         roomdb = Room.databaseBuilder(context,
                 instance.roomClass, kRoomDBName).addCallback(new RoomDatabase.Callback() {
             @Override
-            public void onOpen(@NonNull @NotNull SupportSQLiteDatabase db) {
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
                 super.onOpen(db);
             }
         }).build();
