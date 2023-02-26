@@ -57,26 +57,26 @@ public class LoginActivity extends AppCompatActivity {
 
 
         //1.直接创建SQLiteOpenHelper
-//        SpeSqliteOpenHelperService.getInstance(this);
+        SpeSqliteOpenHelperService.getInstance(this);
         //2.创建SQLiteOpenHelper且需要监听db
-//          SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
-//              @Override
-//              public <T> void onCreate(T db, RoomDatabase room) {
-//
-//              }
-//
-//              @Override
-//              public <T> void onOpen(T db, RoomDatabase room) {
-//
-//              }
-//
-//              @Override
-//              public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
-//
-//              }
-//          });
+        SpeSqliteOpenHelperService.getInstance(this, new SpeSqliteBaseInterface() {
+            @Override
+            public <T> void onCreate(T db, RoomDatabase room) {
+
+            }
+
+            @Override
+            public <T> void onOpen(T db, RoomDatabase room) {
+
+            }
+
+            @Override
+            public <T> void onUpgrade(T db, int oldVersion, int newVersion, RoomDatabase room) {
+
+            }
+        });
         //3.直接创建room
-//        SpeSqliteRoomService.getInstance(this,AppDatabase.class);
+        SpeSqliteRoomService.getInstance(this,AppDatabase.class);
 
         //4.创建room，且需要监听db
         SpeSqliteRoomService.getInstance(this,AppDatabase.class,new SpeSqliteBaseInterface() {
