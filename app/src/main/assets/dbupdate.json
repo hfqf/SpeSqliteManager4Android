@@ -1,6 +1,6 @@
 {
   "dbName": "localdb",
-  "dbVersion": 2 ,
+  "dbVersion": 3 ,
   "dbTables": [
     {
       "tableName":"dbconfig",
@@ -15,6 +15,15 @@
         },
         {
           "key": "dbtables",
+          "keyType": "TEXT"
+        }
+      ]
+    },
+    {
+      "tableName":"teacher",
+      "columns":[
+        {
+          "key": "dbversion",
           "keyType": "TEXT"
         }
       ]
