@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.RoomDatabase;
+import cn.autorepairehelper.spesqlite.SpeSqliteBaseInterface;
+import cn.autorepairehelper.spesqlite.SpeSqliteRoomService;
 
 
 import android.text.Editable;
@@ -27,9 +29,6 @@ import android.widget.Toast;
 import com.points.spesqlitemanager.R;
 import com.points.spesqlitemanager.room.AppDatabase;
 import com.points.spesqlitemanager.room.ServerModel;
-import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteBaseInterface;
-import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteOpenHelperService;
-import cn.autorepairehelper.spesqlite.spesqlite.SpeSqliteRoomService;
 
 public class LoginActivity extends AppCompatActivity {
 

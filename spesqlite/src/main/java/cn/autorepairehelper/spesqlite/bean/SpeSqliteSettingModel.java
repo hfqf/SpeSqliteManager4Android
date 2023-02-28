@@ -1,4 +1,4 @@
-package cn.autorepairehelper.spesqlite.spesqlite.bean;
+package cn.autorepairehelper.spesqlite.bean;
 import java.util.ArrayList;
 
 /**

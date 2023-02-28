@@ -1,4 +1,4 @@
-package cn.autorepairehelper.spesqlite.spesqlite;
+package cn.autorepairehelper.spesqlite;
 
 import androidx.room.RoomDatabase;
 

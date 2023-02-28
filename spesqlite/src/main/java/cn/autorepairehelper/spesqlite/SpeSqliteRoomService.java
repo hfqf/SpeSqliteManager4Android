@@ -1,7 +1,8 @@
-package cn.autorepairehelper.spesqlite.spesqlite;
+package cn.autorepairehelper.spesqlite;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;

@@ -1,18 +1,20 @@
-package cn.autorepairehelper.spesqlite.spesqlite;
+package cn.autorepairehelper.spesqlite;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import cn.autorepairehelper.spesqlite.spesqlite.bean.SpeSqliteColumnSettingModel;
-import cn.autorepairehelper.spesqlite.spesqlite.bean.SpeSqliteSettingModel;
-import cn.autorepairehelper.spesqlite.spesqlite.bean.SpeSqliteTableSettingModel;
-import cn.autorepairehelper.spesqlite.spesqlite.utils.SpeSqliteJsonUtil;
+import cn.autorepairehelper.spesqlite.bean.SpeSqliteColumnSettingModel;
+import cn.autorepairehelper.spesqlite.bean.SpeSqliteSettingModel;
+import cn.autorepairehelper.spesqlite.bean.SpeSqliteTableSettingModel;
+import cn.autorepairehelper.spesqlite.utils.SpeSqliteJsonUtil;
+
 import java.util.ArrayList;
 
 /**

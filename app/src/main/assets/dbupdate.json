@@ -1,13 +1,13 @@
 {
   "dbName": "localdb",
-  "dbVersion": 3 ,
+  "dbVersion": 1 ,
   "dbTables": [
     {
       "tableName":"dbconfig",
       "columns":[
         {
           "key": "dbversion",
-          "keyType": "TEXT"
+          "keyType": "primary key not null"
         },
         {
           "key": "dbname",

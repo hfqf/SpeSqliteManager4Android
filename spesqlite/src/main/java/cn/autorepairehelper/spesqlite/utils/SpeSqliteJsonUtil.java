@@ -1,7 +1,9 @@
-package cn.autorepairehelper.spesqlite.spesqlite.utils;
+package cn.autorepairehelper.spesqlite.utils;
+
 
 import android.content.Context;
 import android.content.res.AssetManager;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
